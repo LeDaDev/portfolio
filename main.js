@@ -20,6 +20,42 @@ const modalImg = document.querySelector('[data-modal-img]');
 const modalTitle = document.querySelector('[data-modal-title]');
 const modalText = document.querySelector('[data-modal-text]');
 
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('[data-form]');
+    const inputs = document.querySelectorAll('[data-form-input]');
+    const submitBtn = document.querySelector('[data-form-btn]');
+
+    // Kích hoạt nút gửi khi tất cả các trường được điền
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            const allFilled = Array.from(inputs).every(input => input.value.trim() !== '');
+            submitBtn.disabled = !allFilled;
+        });
+    });
+
+    // Xử lý gửi biểu mẫu
+    form.addEventListener('submit', (e) => {
+        // Không cần ngăn chặn mặc định vì chúng ta muốn mở ứng dụng email
+        const formData = new FormData(form);
+        const fullname = formData.get('fullname');
+        const email = formData.get('email');
+        const message = formData.get('message');
+
+        // Tạo nội dung email
+        const subject = encodeURIComponent('Liên hệ từ ' + fullname);
+        const body = encodeURIComponent(`Từ: ${fullname}\nEmail: ${email}\n\nTin nhắn:\n${message}`);
+
+        // Cập nhật action của form với mailto URL tùy chỉnh
+        form.action = `mailto:danglehoang.k22@gmail.com?subject=${subject}&body=${body}`;
+
+        // Sau khi gửi, xóa biểu mẫu và vô hiệu hóa nút
+        setTimeout(() => {
+            form.reset();
+            submitBtn.disabled = true;
+        }, 100); // Độ trễ nhỏ để đảm bảo email mở trước khi xóa
+    });
+});
+
 const testimonialsModalFunc = function () {
     modalContainer.classList.toggle('active');
     overlay.classList.toggle('active');
